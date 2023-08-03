@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import java.lang.*?>
+<?import java.util.*?>
+<?import javafx.scene.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.image.Image?>
+<Pane xmlns="http://javafx.com/javafx"
+      xmlns:fx="http://javafx.com/fxml"
+      fx:controller="view.ChatController"
+      prefHeight="600.0" prefWidth="800.0">
+    <Label text="Welcome !"/>
+
+    <Label text="Start Public Chat" onMouseClicked="#publicChat" layoutY="50" textFill="darkblue"/>
+<!--    <Label text="send" onMouseClicked="#tryToSend" layoutY="50" textFill="darkblue" layoutX="200"/>-->
+<!--    <TextField promptText="enter message to send" maxWidth="300" fx:id="mustBeSent" layoutY="50" layoutX="450"/>-->
+    <Label text="Start Private Chat" onMouseClicked="#privateChat" layoutY="200" textFill="darkblue"/>
+    <TextField promptText="enter private chat member" maxWidth="300" fx:id="privateChatMember" layoutY="200" layoutX="300"/>
+    <Label text="Room" onMouseClicked="#room" textFill="darkblue" layoutY="350"/>
+    <TextField promptText="enter room chat members" maxWidth="300" fx:id="roomMembers" layoutY="350" layoutX="300"/>
+    <Label text="Join me" onMouseClicked="#join" textFill="darkblue" layoutY="500"/>
+    <TextField promptText="enter chat owner to join" maxWidth="300" fx:id="chatOwner" layoutY="500" layoutX="300"/>
+    <TextField promptText="enter room type to join" maxWidth="300" fx:id="roomType" layoutY="500" layoutX="600"/>
+
+</Pane>
+
