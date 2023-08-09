@@ -213,7 +213,7 @@ public class GameController {
             Store store = new Store(getCurrentGovernment(), buildingName, maxHitpoint, neededWorkers, price, neededStone, neededWood);
             buildingHome.setBuilding(store);
             getCurrentGovernment().getAllStore().add(store);
-            
+
         } else {
             return "Please enter true type for your building name";
         }
@@ -465,7 +465,7 @@ public class GameController {
             return "We do not have enough needed coin to create this unit";
         if (targetHome.getBuilding().getType().equals("Barrack")) {
             if (isItBarrackTroop(troopName)) {
-                //TODO
+
                 if (!setBarrackTroopNeededWeapons(troopName))
                     return "We do not have enough needed weapons to create this unit";
                 troop = new Troop(troopName, "Barrack", getCurrentGovernment(), power, hitponit, speed);
@@ -567,36 +567,6 @@ public class GameController {
     private void resetSelectedBuildingFromGame() {
         getCurrentGame().setSelectedBuildingHome(null);
     }
-
-    //WRONG
-//    private void decreaseElementFromStockPlie(String elementType, double amount) {
-//        double decreaseAmount = amount;
-//        for (int i = 0; i < getCurrentGovernment().getStockPiles().size(); i++) {
-//            StockPile StockPile = getCurrentGovernment().getStockPiles().get(i);
-//            decreaseAmount = decreaseAmount - StockPile.getElements().get(elementType);
-//            if (decreaseAmount <= 0) {
-//                StockPile.setElements(elementType, StockPile.getElements().get(elementType) - amount);
-//                return;
-//            } else {
-//                StockPile.setElements(elementType, 0.0);
-//            }
-//        }
-//    }
-
-    //WRONG
-//    private void decreaseElementFromArmory(String elementType, int amount) {
-//        double decreaseAmount = amount;
-//        for (int i = 0; i < getCurrentGovernment().getArmouries().size(); i++) {
-//            Armoury armoury = ((Armoury) getCurrentGovernment().getArmouries().get(i));
-//            decreaseAmount = decreaseAmount - armoury.getElements(elementType);
-//            if (decreaseAmount <= 0) {
-//                armoury.setElements(elementType, armoury.getElements(elementType) - amount);
-//                return;
-//            } else {
-//                armoury.setElements(elementType, 0.0);
-//            }
-//        }
-//    }
 
 
     private boolean isEnemyNearHome(Home home) {
@@ -886,9 +856,7 @@ public class GameController {
         }
         if (yourArcherNumber == 0)
             return "You do not have any Archer or CrossbowMen here !";
-//        for (int i = 0; i < enemyTroops.size() && i < yourArcherNumber; i++) {
-//            reduceFromTroopHitpoint(archerAndCrossbowMen.get(i), enemyTroops.get(i));
-//        }
+
         setAttackBetweenEnemyAndYours(archerAndCrossbowMen, enemyTroops);
         resetArcherBorder(yourTroops);
         return "We attack to troops which are in target home";
@@ -1443,26 +1411,6 @@ public class GameController {
         }
     }
 
-//    private void addFoodToGranary(String FoodName, int amount) {
-//
-//        ArrayList<Granary> allGraneries = getCurrentGovernment().getGraneries();
-//        for (int i = 0; i < allGraneries.size(); i++) {
-//            if (amount <= 0)
-//                return;
-//            if (allGraneries.get(i).getCapacity() > 0) {
-//                if (allGraneries.get(i).getCapacity() >= amount) {
-//                    allGraneries.get(i).setCapacity(allGraneries.get(i).getCapacity() - amount);
-//                    allGraneries.get(i).setElements(FoodName, allGraneries.get(i).getElements(FoodName) + ((double) amount));
-//                    return;
-//                } else {
-//                    Integer availableIncrease = allGraneries.get(i).getCapacity();
-//                    allGraneries.get(i).setCapacity(0);
-//                    allGraneries.get(i).setElements(FoodName, allGraneries.get(i).getElements(FoodName) + availableIncrease);
-//                    amount -= availableIncrease;
-//                }
-//            }
-//        }
-//    }
 
     private void setFoodRateEffect() {
         Integer eatenFood = getTheEatenFoodAmountPerOne(getCurrentGovernment().getFoodRate()) * getCurrentGovernment().getPopulation();
