@@ -9,6 +9,7 @@ import org.example.model.GameInfo.Map;
 import org.example.model.User;
 
 import java.net.Socket;
+import java.util.ArrayList;
 import java.util.regex.Matcher;
 
 public class GameMenu extends Menu {
@@ -83,8 +84,9 @@ public class GameMenu extends Menu {
                 DataBase.writeAMessageToClient(gameController.showTaxRate(), socket);
             else if ((matcher = isMatched(command, "^open shop menu$")) != null)
                 DataBase.writeAMessageToClient(gameController.openShop(socket), socket);
-            else if ((matcher = isMatched(command, "^open trade menu$")) != null)
-                DataBase.writeAMessageToClient(gameController.openTrade(socket), socket);
+                //TODO
+//             else if ((matcher = isMatched(command, "^open trade menu$")) != null)
+//                DataBase.writeAMessageToClient(gameController.openTrade(socket), socket);
             else if ((matcher = isMatched(command, "^dropbuilding(((?: -x (?<x>\\S+))|(?: -y (?<y>\\S+))|(?: -type (?<type>(?:\"[^\"]+\")|(?:(?!\")\\S+(?<!\"))))){0,1}){0,3}$")) != null) {
                 if (matcher.group("x") == null || matcher.group("y") == null)
                     printMassage("-x or -y is null", socket);

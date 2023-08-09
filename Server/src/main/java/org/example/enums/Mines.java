@@ -2,16 +2,15 @@ package org.example.enums;
 
 public enum Mines {
     IronMine("IronMine", 10, "iron", "IronGround", 0, 0, 0),
-    StoneMine("StoneMine", 20, "stone", "StoneGround", 0, 0, 0),
-    WoodCutter("WoodCutter", 35, "wood", "", 0, 0, 0),
+    StoneMine("StoneMine", 20, "Stone", "StoneGround", 0, 0, 0),
+    WoodCutter("WoodCutter", 35, "Wood", "", 0, 0, 0),
     OxTether("OxTether", 0, "", "", 0, 0, 0),
-    StockPile("StockPile", 0, "", "", 0, 0, 0),
+//    StockPile("StockPile", 0, "", "", 0, 0, 0),
     armourer("armourer", 3, "LeatherArmour", "", 0, 0, 2),
     blacksmith("blacksmith", 2, "Mace", "", 0, 0, 2),
     Fletcher("Fletcher", 4, "Bow", "", 3, 0, 0),
     Poleturner("Poleturner", 3, "Spear", "", 0, 0, 1),
-    Stable("Stable", 2, "Horse", "",0,0,0),
-
+//    Stable("Stable", 2, "Horse", "",0,0,0),
     ;
     private String name;
     private String productionName;

@@ -11,7 +11,7 @@ public enum WarBuildings {
     DefensiveTower("DefensiveTower", 7, 7, 0),
     SquareTower("SquareTower", 10, 10, 0),
     CircleTower("CircleTower", 0, 0, 0),
-    Armoury("Armoury", 0, 0, 0),
+    //    Armoury("Armoury", 0, 0, 0),
     Barrack("Barrack", 0, 0, 0),
     MercenaryPost("MercenaryPost", 0, 0, 0),
     EngineerGuild("EngineerGuild", 0, 0, 0),

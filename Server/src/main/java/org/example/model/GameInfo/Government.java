@@ -12,29 +12,15 @@ public class Government {
     private double coin = 100000;
     private Integer taxRate = 0;
     private ArrayList<Troop> troops = new ArrayList<>();
-    private ArrayList<Armoury> armouries = new ArrayList<>();
-    private ArrayList<StockPile> stockPiles = new ArrayList<>();
-    private ArrayList<Granery> graneries = new ArrayList<>();
     private Integer fearRate = 0;
-    private Integer usedStone;
-    private Integer usedWood;
-    private Integer usedIron;
     private boolean isJoined = false;
+    private ArrayList<Store> allStore = new ArrayList<>();
 
     public Government(User owner) {
         this.owner = owner;
     }
 
-
     private Integer population = 10;
-
-    public ArrayList<Granery> getGraneries() {
-        return graneries;
-    }
-
-    public void addGranery(Granery granery) {
-        graneries.add(granery);
-    }
 
     public Integer getPopularity() {
         return popularity;
@@ -73,14 +59,6 @@ public class Government {
         return coin;
     }
 
-    public ArrayList<Armoury> getArmouries() {
-        return armouries;
-    }
-
-    public void addArmoury(Armoury armoury) {
-        this.armouries.add(armoury);
-    }
-
     public void setFoodRate(Integer rate) {
         this.foodRate = rate;
     }
@@ -95,14 +73,6 @@ public class Government {
 
     public ArrayList<Troop> getTroops() {
         return troops;
-    }
-
-    public ArrayList<StockPile> getStockPiles() {
-        return stockPiles;
-    }
-
-    public void addStockPile(StockPile stockPile) {
-        this.stockPiles.add(stockPile);
     }
 
     public Integer getPopulation() {
@@ -127,5 +97,9 @@ public class Government {
 
     public void setJoined(boolean joined) {
         isJoined = joined;
+    }
+
+    public ArrayList<Store> getAllStore() {
+        return allStore;
     }
 }

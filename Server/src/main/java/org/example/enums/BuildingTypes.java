@@ -2,8 +2,8 @@ package org.example.enums;
 
 public enum BuildingTypes {
     IronMine(80, "IronMine", 10, "iron", 3, 0, 20, 0, 0, 0, 0, 0),
-    StoneMine(120, "StoneMine", 20, "stone", 3, 0, 0, 0, 0, 0, 0, 0),
-    WoodCutter(50, "WoodCutter", 35, "wood", 1, 0, 0, 0, 0, 0, 0, 0),
+    StoneMine(120, "StoneMine", 20, "Stone", 3, 0, 0, 0, 0, 0, 0, 0),
+    WoodCutter(50, "WoodCutter", 35, "Wood", 1, 0, 0, 0, 0, 0, 0, 0),
     OxTether(20, "OxTether", 0, "", 1, 0, 5, 0, 0, 0, 0, 0),
     StockPile(100, "StockPile", 0, "", 0, 0, 0, 0, 0, 0, 0, 0),
     armourer(50, "armourer", 3, "LeatherArmour", 1, 0, 20, 100, 0, 0, 0, 0),
@@ -34,7 +34,7 @@ public enum BuildingTypes {
     Mill(40, "Mill", 10, "flour", 3, 0, 20, 0, 0, 0, 0, 0),
     Baker(60, "Baker", 5, "Bread", 1, 0, 10, 0, 0, 0, 0, 0),
     Brewery(40, "Brewery", 3, "", 1, 0, 10, 0, 0, 0, 0, 0),
-    Granery(50, "Granery", 0, "", 0, 0, 5, 0, 0, 0, 0, 0),
+    Granary(50, "Granary", 0, "", 0, 0, 5, 0, 0, 0, 0, 0),
     AppleGarden(50, "AppleGarden", 15, "Apple", 1, 0, 5, 0, 0, 0, 0, 0),
     DairyProducts(50, "DairyProducts", 10, "Cheese", 1, 0, 10, 0, 0, 0, 0, 0),
     BarleyField(50, "BarleyField", 0, "", 1, 0, 15, 0, 0, 0, 0, 0),

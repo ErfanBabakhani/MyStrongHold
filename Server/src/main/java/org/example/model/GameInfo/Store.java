@@ -1,42 +1,68 @@
 package org.example.model.GameInfo;
 
-import java.util.HashMap;
+import org.example.enums.FloorType;
+import org.example.enums.StoreGood;
+import org.example.enums.TroopTypes;
+import org.example.model.DataBase;
+
+import java.util.ArrayList;
 
 public class Store extends Building {
-    private Double maxCapacity = 0.0;
 
-    protected Double space = maxCapacity;
+    private final Integer maxCap;
+    private Integer capacity;
+    private final ArrayList<Good> goodList = new ArrayList<>();
 
-    HashMap<String, Double> elements = new HashMap<>();
-
-    public Store(Double maxCapacity, Government owner, String type, Integer maxHitpoint, Integer needWorkers, Integer price, Integer neededStone, Integer neededWood) {
+    public Store(Government owner, String type, Integer maxHitpoint, Integer needWorkers, Integer price, Integer neededStone, Integer neededWood) {
         super(owner, type, maxHitpoint, needWorkers, price, neededStone, neededWood);
-        this.maxCapacity = maxCapacity;
-        this.space = maxCapacity;
+        if (type.equals("Granary")) {
+            this.maxCap = 100;
+            goodList.addAll(StoreGood.Granary.getGoodList());
+        } else if (type.equals("StockPile")) {
+            this.maxCap = 200;
+            goodList.addAll(StoreGood.StockPile.getGoodList());
+        } else if (type.equals("Armoury")) {
+            this.maxCap = 50;
+            goodList.addAll(StoreGood.Armoury.getGoodList());
+        } else if (type.equals("Stable")) {
+            this.maxCap = 5;
+            goodList.addAll(StoreGood.Stable.getGoodList());
+        } else {
+            this.maxCap = 0;
+            return;
+        }
+        capacity = this.maxCap;
     }
 
-    public void setElements(String elementsKey, Double amount) {
-        elements.put(elementsKey, amount);
+    public Integer getCapacity() {
+        return capacity;
     }
 
-    public Double getElements(String good) {
-        return elements.get(good);
+    public void setCapacity(Integer capacity) {
+        this.capacity = capacity;
     }
 
-    public HashMap<String, Double> getElements() {
-        return elements;
+    public Integer getMaxCap() {
+        return maxCap;
     }
 
-    public Double getCapacity() {
-        return space;
+    public ArrayList<Good> getGoodList() {
+        return goodList;
     }
 
-    public void setCapacity(Double capacity) {
-        space = capacity;
+    public static void main(String[] args) {
+        Store store = new Store(null, "Granary", 0, 0, 0, 0, 0);
+        System.out.println(store.goodList.get(0).getGoodName());
+        System.out.println(store.goodList.get(0).getPrice());
+        System.out.println(store.capacity);
+//        for (int i = 0; i < FloorType.values().length; i++) {
+//            System.out.println(FloorType.values()[i]);
+//        }
+        for (int i = 0; i < TroopTypes.values().length; i++) {
+            System.out.println(TroopTypes.values()[i].type + TroopTypes.values()[i].weapons);
+        }
+        for (int i = 0; i < FloorType.values().length; i++) {
+            System.out.println(FloorType.values()[i].name());
+        }
     }
-
-    public void changeCapacity(Double capacity) {
-        space -= capacity;
-    }
-
 }

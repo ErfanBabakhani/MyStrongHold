@@ -1,60 +1,28 @@
 package org.example.model.GameInfo;
 
-import java.util.ArrayList;
-
 public class Good {
-    private static ArrayList<Good> goods = new ArrayList<>();
-
-    private String name;
-    private Double buy;
-    private Double sell;
-
-    private Double number;
-
-
-    public Good(String name, Double buy, Double sell) {
-        this.name = name;
-        this.buy = buy;
-        this.sell = sell;
-        this.number = 0.0;
-        goods.add(this);
+    public Good(String goodName, Integer price) {
+        this.goodName = goodName;
+        this.price = price;
     }
 
-    public Double getNumber() {
-        return number;
+    private final String goodName;
+    private final Integer price;
+    private int count = 0;
+
+    public String getGoodName() {
+        return goodName;
     }
 
-    public String getName() {
-        return name;
+    public int getCount() {
+        return count;
     }
 
-    public void setNumber(Double number) {
-        this.number = number;
+    public void setCount(int count) {
+        this.count = count;
     }
 
-    public Double getBuy() {
-        return buy;
+    public Integer getPrice() {
+        return price;
     }
-
-    public Double getSell() {
-        return sell;
-    }
-
-    public String goodToText() {
-        return (name + "; buy: " + buy + " Sell: " + sell + " number: " + number + ".\n");
-    }
-
-    public Good getGoodByName(String name) {
-        if (goods.size() == 0) {
-            return null;
-        } else {
-            for (Good good : goods) {
-                if (good.getName().equals(name)) {
-                    return good;
-                }
-            }
-        }
-        return null;
-    }
-
 }

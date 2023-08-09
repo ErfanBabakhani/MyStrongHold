@@ -1,6 +1,7 @@
 package org.example.model;
 
 import org.example.Main;
+import org.example.model.GameInfo.Good;
 import org.example.model.GameInfo.Government;
 import org.example.model.GameInfo.Room;
 
@@ -40,29 +41,6 @@ public class DataBase {
         slogans.add("We will walk to Jerusalem with the Muslims together.");
         slogans.add("Hüseynçilər");
     }
-
-    private final static ArrayList<String> typesOfFloor = new ArrayList<>();
-
-    static {
-        typesOfFloor.add("FlatGround");
-        typesOfFloor.add("GravelGround");
-        typesOfFloor.add("Rock");
-        typesOfFloor.add("StoneGround");
-        typesOfFloor.add("IronGround");
-        typesOfFloor.add("Grass");
-        typesOfFloor.add("Meadow");
-        typesOfFloor.add("FoolMeadow");
-        typesOfFloor.add("Floor");
-        typesOfFloor.add("Oil");
-        typesOfFloor.add("Plain");
-        typesOfFloor.add("DeapLessWater");
-        typesOfFloor.add("River");
-        typesOfFloor.add("SmallPond");
-        typesOfFloor.add("BigPond");
-        typesOfFloor.add("Beach");
-        typesOfFloor.add("Sea");
-    }
-
     private final static ArrayList<String> typesOfTree = new ArrayList<>();
 
     static {
@@ -72,56 +50,6 @@ public class DataBase {
         typesOfTree.add("Cherry");
         typesOfTree.add("Coconut");
 
-    }
-
-    private static ArrayList<String> goods = new ArrayList<>();
-
-    static {
-        goods.add("Apple");
-        goods.add("Meat");
-        goods.add("Cheese");
-        goods.add("Bread");
-        goods.add("stone");
-        goods.add("wood");
-        goods.add("iron");
-        goods.add("pitch");
-        goods.add("wheat");
-        goods.add("flour");
-        goods.add("LeatherArmour");
-        goods.add("Mace");
-        goods.add("Sword");
-        goods.add("MetalArmour");
-        goods.add("Bow");
-        goods.add("Crossbow");
-        goods.add("Spear");
-        goods.add("Pike");
-    }
-
-    public static ArrayList<String> getGoods() {
-        return goods;
-    }
-
-    private final static ArrayList<String> typesOfTroops = new ArrayList<>();
-
-    static {
-        typesOfTroops.add("Archer");
-        typesOfTroops.add("CrossbowMen");
-        typesOfTroops.add("SpearMen");
-        typesOfTroops.add("PikeMen");
-        typesOfTroops.add("MaceMen");
-        typesOfTroops.add("SwordsMen");
-        typesOfTroops.add("Knight");
-        typesOfTroops.add("Tunneler");
-        typesOfTroops.add("LadderMen");
-        typesOfTroops.add("Engineer");
-        typesOfTroops.add("BlackMonk");
-        typesOfTroops.add("ArabianBow");
-        typesOfTroops.add("Slaves");
-        typesOfTroops.add("Slingers");
-        typesOfTroops.add("Assassins");
-        typesOfTroops.add("HorseArchers");
-        typesOfTroops.add("ArabianSwordsMen");
-        typesOfTroops.add("FireThrowers");
     }
 
     private final static ArrayList<String> typesOfBarrack = new ArrayList<>();
@@ -157,67 +85,6 @@ public class DataBase {
         typesOfMercenaryPost.add("FireThrowers");
     }
 
-    private final static ArrayList<String> typeOfMines = new ArrayList<>();
-
-    static {
-        typeOfMines.add("IronMine");
-        typeOfMines.add("StoneMine");
-        typeOfMines.add("WoodCutter");
-        typeOfMines.add("OxTether");
-        typeOfMines.add("StockPile");
-        typeOfMines.add("armourer");
-        typeOfMines.add("blacksmith");
-        typeOfMines.add("Fletcher");
-        typeOfMines.add("Poleturner");
-    }
-
-    private final static ArrayList<String> typeOfWarBuilding = new ArrayList<>();
-
-    static {
-        typeOfWarBuilding.add("SmallStoneGatehouse");
-        typeOfWarBuilding.add("BigStoneGatehouse");
-        typeOfWarBuilding.add("Drawbridge");
-        typeOfWarBuilding.add("LookoutTower");
-        typeOfWarBuilding.add("PerimeterTower");
-        typeOfWarBuilding.add("DefensiveTower");
-        typeOfWarBuilding.add("SquareTower");
-        typeOfWarBuilding.add("CircleTower");
-        typeOfWarBuilding.add("Armoury");
-        typeOfWarBuilding.add("Barrack");
-        typeOfWarBuilding.add("MercenaryPost");
-        typeOfWarBuilding.add("EngineerGuild");
-        typeOfWarBuilding.add("KillingPit");
-        typeOfWarBuilding.add("OilSmelter");
-        typeOfWarBuilding.add("PitchDitch");
-        typeOfWarBuilding.add("CagedWarDogs");
-        typeOfWarBuilding.add("SiegeTent");
-        typeOfWarBuilding.add("Stable");
-
-    }
-
-    private final static ArrayList<String> typeOfFoodFarm = new ArrayList<>();
-
-    static {
-        typeOfFoodFarm.add("Mill");
-        typeOfFoodFarm.add("Baker");
-        typeOfFoodFarm.add("Brewery"); //AbeJo Sazi
-        typeOfFoodFarm.add("Granery");
-        typeOfFoodFarm.add("AppleGarden");
-        typeOfFoodFarm.add("DairyProducts");
-        typeOfFoodFarm.add("BarleyField");
-        typeOfFoodFarm.add("Hunt");
-        typeOfFoodFarm.add("WheatField");
-    }
-
-    private final static ArrayList<String> typeOfTownBuilding = new ArrayList<>();
-
-    static {
-        typeOfTownBuilding.add("Inn");
-        typeOfTownBuilding.add("Hovel");
-        typeOfTownBuilding.add("Church");
-        typeOfTownBuilding.add("Cathedral");
-    }
-
     public static void addUserToDataBase(User user) {
         users.add(user);
         if (user.getEmail() != null)
@@ -248,29 +115,6 @@ public class DataBase {
         return slogans;
     }
 
-    public static ArrayList<String> getTypesOfTroops() {
-        return typesOfTroops;
-    }
-
-    public static ArrayList<String> getTypeOfFoodFarm() {
-        return typeOfFoodFarm;
-    }
-
-    public static ArrayList<String> getTypeOfMines() {
-        return typeOfMines;
-    }
-
-    public static ArrayList<String> getTypeOfTownBuilding() {
-        return typeOfTownBuilding;
-    }
-
-    public static ArrayList<String> getTypeOfWarBuilding() {
-        return typeOfWarBuilding;
-    }
-
-    public static ArrayList<String> getTypesOfFloor() {
-        return typesOfFloor;
-    }
 
     public static ArrayList<String> getTypesOfTree() {
         return typesOfTree;
@@ -315,14 +159,6 @@ public class DataBase {
 
     public static ArrayList<Room> getAllRooms() {
         return allRooms;
-    }
-
-    public static void setAllRooms(ArrayList<Room> allRooms) {
-        DataBase.allRooms = allRooms;
-    }
-
-    public static ArrayList<User> getUsers() {
-        return users;
     }
 
     public static Government findGovernmentByUser(ArrayList<Government> all, User tar) {

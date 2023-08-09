@@ -8,11 +8,11 @@ public enum TypeOfEngineerBuildings {
     StopManjenigh("StopManjenigh", 30, 3, 65, 75),
     FireStoneDropper("FireStoneDropper", 30, 2, 50, 40),
     ;
-    private String name;
-    private Integer price;
-    private Integer neededEngineers;
-    private Integer maxHitpoint;
-    private Integer destroyingPower;
+    private final String name;
+    private final Integer price;
+    private final Integer neededEngineers;
+    private final Integer maxHitpoint;
+    private final Integer destroyingPower;
 
     TypeOfEngineerBuildings(String name, Integer price, Integer neededEngineers, Integer maxHitpoint, Integer destroyingPower) {
         this.name = name;

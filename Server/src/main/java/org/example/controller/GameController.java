@@ -84,19 +84,8 @@ public class GameController {
     }
 
     public String showFoodList() {
-        StringBuilder output = new StringBuilder();
-        output.append("All Foods Name:\n");
-        double[] foodAmountInAllGranery = new double[Granery.foodNames.size()];
-        for (int i = 0; i < getCurrentGovernment().getGraneries().size(); i++) {
-            HashMap<String, Double> allFoods = getCurrentGovernment().getGraneries().get(i).getAllFoods();
-            for (int j = 0; j < allFoods.size(); j++) {
-                foodAmountInAllGranery[j] += allFoods.get(Granery.foodNames.get(j));
-            }
-        }
-        for (int i = 0; i < Granery.foodNames.size(); i++) {
-            output.append(Granery.foodNames.get(i)).append("-->").append(foodAmountInAllGranery[i]).append(" , ");
-        }
-        return output.toString();
+        //TODO
+        return null;
     }
 
     public Government getCurrentGovernment() {
@@ -183,21 +172,9 @@ public class GameController {
         if (!isEnoughWorkers(neededWorkers)) {
             return "Not enough workers to run this building so first increase your unemployed !";
         }
-        if (getAllElementFromStockPile("stone") < neededStone || getAllElementFromStockPile("wood") < neededWood) {
-            return "Sorry more stone or wood needed !";
-        }
-        if (buildingName.equals("StockPile")) {
-            StockPile stockPile = new StockPile(getCurrentGovernment());
-            buildingHome.setBuilding(stockPile);
-            getCurrentGovernment().addStockPile(stockPile);
-        } else if (buildingName.equals("Granery")) {
-            Granery granery = new Granery(getCurrentGovernment());
-            getCurrentGovernment().addGranery(granery);
-            buildingHome.setBuilding(granery);
-        } else if (buildingName.equals("Armoury")) {
-            Armoury armoury = new Armoury(getCurrentGovernment());
-            getCurrentGovernment().addArmoury(armoury);
-            buildingHome.setBuilding(armoury);
+
+        if (getAllElementFromStore("StockPile", "Stone") < neededStone || getAllElementFromStore("StockPile", "Wood") < neededWood) {
+            return "Sorry more Stone or Wood needed !";
         } else if (isWarBuilding(buildingName)) {
             Integer fireRange = getTheWarBuildingFireRange(buildingName);
             Integer defendRange = getTheWarBuildingDefendRange(buildingName);
@@ -231,15 +208,67 @@ public class GameController {
                 return "Invalid floor for building << " + buildingName + " >>\n" + "<<< Try home in --> " + validFloorType + " types >>>";
             Mine mine = new Mine(getCurrentGovernment(), buildingName, maxHitpoint, neededWorkers, price, neededStone, neededWood, productionNumber, productionName);
             buildingHome.setBuilding(mine);
+        } else if (isStore(buildingName)) {
+
+            Store store = new Store(getCurrentGovernment(), buildingName, maxHitpoint, neededWorkers, price, neededStone, neededWood);
+            buildingHome.setBuilding(store);
+            getCurrentGovernment().getAllStore().add(store);
+            
         } else {
             return "Please enter true type for your building name";
         }
         getCurrentGovernment().setCoin(getCurrentGovernment().getCoin() - getThePriceOfBuilding(buildingName));
         isSuccessful[0] = true;
-        decreaseElementFromStockPlie("stone", neededStone);
-        decreaseElementFromStockPlie("wood", neededStone);
+
+        decreaseElementFromStore("StockPile", "Stone", neededStone);
+        decreaseElementFromStore("StockPile", "Wood", neededStone);
+
         decreaseUnemployedPeople(neededWorkers);
         return "We build a " + buildingName + " for you MyLord";
+    }
+
+    private void decreaseElementFromStore(String storeType, String element, Integer amount) {
+        ArrayList<Store> allStore = getCurrentGovernment().getAllStore();
+        for (Store tarStore : allStore) {
+            if (!tarStore.getType().equals(storeType))
+                continue;
+            if (amount <= 0)
+                return;
+            Good good = findGoodByName(tarStore, element);
+            if (good == null)
+                continue;
+            if (good.getCount() >= amount) {
+                good.setCount(good.getCount() - amount);
+                tarStore.setCapacity(tarStore.getCapacity() + amount);
+                amount = -1;
+            } else if (good.getCount() < amount) {
+                amount -= good.getCount();
+                tarStore.setCapacity(tarStore.getCapacity() + good.getCount());
+                good.setCount(0);
+            }
+        }
+    }
+
+    private int getAllElementFromStore(String storeType, String element) {
+        ArrayList<Store> allStores = getCurrentGovernment().getAllStore();
+        int allElementCount = 0;
+        for (Store tarStore : allStores) {
+            if (!tarStore.getType().equals(storeType))
+                continue;
+            Good good = findGoodByName(tarStore, element);
+            if (good == null)
+                continue;
+            allElementCount += good.getCount();
+        }
+        return allElementCount;
+    }
+
+    private boolean isStore(String buildingName) {
+        for (int i = 0; i < Stores.values().length; i++) {
+            if (Stores.values()[i].name().equals(buildingName))
+                return true;
+        }
+        return false;
     }
 
     private void decreaseUnemployedPeople(Integer decreaseAmount) {
@@ -399,8 +428,8 @@ public class GameController {
             return "Please enter troop type!";
         Home selectedHome = getCurrentGame().getSelectedBuildingHome();
         String troopName = matcher.group("type");
-        String output = new String();
-        Integer count = Integer.parseInt(matcher.group("count"));
+        String output = "";
+        int count = Integer.parseInt(matcher.group("count"));
         boolean[] isSuccessful = new boolean[1];
         isSuccessful[0] = false;
         int i;
@@ -436,6 +465,7 @@ public class GameController {
             return "We do not have enough needed coin to create this unit";
         if (targetHome.getBuilding().getType().equals("Barrack")) {
             if (isItBarrackTroop(troopName)) {
+                //TODO
                 if (!setBarrackTroopNeededWeapons(troopName))
                     return "We do not have enough needed weapons to create this unit";
                 troop = new Troop(troopName, "Barrack", getCurrentGovernment(), power, hitponit, speed);
@@ -480,32 +510,18 @@ public class GameController {
         for (int i = 0; i < TroopTypes.values().length; i++) {
             if (TroopTypes.values()[i].type.equals(type)) {
                 weapons = TroopTypes.values()[i].weapons;
-                System.out.println("<<setBarrackTroop...>>" + weapons.size());
             }
         }
-        for (int i = 0; i < weapons.size(); i++) {
-            double exist = getAllElementArmoury(weapons.get(i));
+        for (String s : weapons) {
+            double exist = getAllElementFromStore("Armoury", s);
             if (exist <= 0) {
-                System.out.println("<<setBarrackTroop...>>" + weapons.get(i) + " -->> " + exist);
                 return false;
             }
         }
-        for (int i = 0; i < weapons.size(); i++) {
-            decreaseElementFromArmory(weapons.get(i), 1);
+        for (String weapon : weapons) {
+            decreaseElementFromStore("Armoury", weapon, 1);
         }
         return true;
-    }
-
-
-    private double findTheWeaponNumberInArmories(String weaponName) {
-        for (int i = 0; i < getCurrentGovernment().getArmouries().size(); i++) {
-            System.out.println(">>>>>>>>>>>");
-            if (getCurrentGovernment().getArmouries().get(i).getElements(weaponName) > 0) {
-                System.out.println("TRUE WEAPON <<findTheWeapon..>>" + i);
-                return i;
-            }
-        }
-        return -1;
     }
 
     private boolean isEnoughCoinTo(Integer price) {
@@ -535,13 +551,15 @@ public class GameController {
         if (getCurrentGame().getSelectedBuildingHome() == null)
             return "You have not choose a building yet";
         int neededStone = getCurrentGame().getSelectedBuildingHome().getBuilding().getNeededStone();
-        if (getAllElementFromStockPile("stone") < neededStone)
-            return "Sorry more stone needed";
+
+        if (getAllElementFromStore("StockPile", "Stone") < neededStone)
+            return "Sorry more Stone needed";
         if (isEnemyNearHome(getCurrentGame().getSelectedBuildingHome()))
             return "You can not repair this building because enemy is near that";
         Building building = getCurrentGame().getSelectedBuildingHome().getBuilding();
         building.setHitpoint(building.getMaxHitpoint());
-        decreaseElementFromStockPlie("stone", building.getNeededStone());
+
+        decreaseElementFromStore("StockPile", "Stone", building.getNeededStone());
         resetSelectedBuildingFromGame();
         return "We repair the building successfully";
     }
@@ -550,60 +568,35 @@ public class GameController {
         getCurrentGame().setSelectedBuildingHome(null);
     }
 
-    private double getAllElementFromStockPile(String elementType) {
-        double allAmount = 0;
-        for (int i = 0; i < getCurrentGovernment().getStockPiles().size(); i++) {
-            StockPile stockPile = getCurrentGovernment().getStockPiles().get(i);
-            allAmount += stockPile.getElements().get(elementType);
-        }
-        return allAmount;
-    }
+    //WRONG
+//    private void decreaseElementFromStockPlie(String elementType, double amount) {
+//        double decreaseAmount = amount;
+//        for (int i = 0; i < getCurrentGovernment().getStockPiles().size(); i++) {
+//            StockPile StockPile = getCurrentGovernment().getStockPiles().get(i);
+//            decreaseAmount = decreaseAmount - StockPile.getElements().get(elementType);
+//            if (decreaseAmount <= 0) {
+//                StockPile.setElements(elementType, StockPile.getElements().get(elementType) - amount);
+//                return;
+//            } else {
+//                StockPile.setElements(elementType, 0.0);
+//            }
+//        }
+//    }
 
-    private double getAllElementArmoury(String elementType) {
-        double allAmount = 0;
-        for (int i = 0; i < getCurrentGovernment().getArmouries().size(); i++) {
-            Armoury armoury = getCurrentGovernment().getArmouries().get(i);
-            allAmount += armoury.getElements().get(elementType);
-        }
-        return allAmount;
-    }
-
-    private double getAllElementGranery(String elementType) {
-        double allAmount = 0;
-        for (int i = 0; i < getCurrentGovernment().getGraneries().size(); i++) {
-            Granery granery = getCurrentGovernment().getGraneries().get(i);
-            allAmount += granery.getElements().get(elementType);
-        }
-        return allAmount;
-    }
-
-    private void decreaseElementFromStockPlie(String elementType, double amount) {
-        double decreaseAmount = amount;
-        for (int i = 0; i < getCurrentGovernment().getStockPiles().size(); i++) {
-            StockPile stockPile = getCurrentGovernment().getStockPiles().get(i);
-            decreaseAmount = decreaseAmount - stockPile.getElements().get(elementType);
-            if (decreaseAmount <= 0) {
-                stockPile.setElements(elementType, stockPile.getElements().get(elementType) - amount);
-                return;
-            } else {
-                stockPile.setElements(elementType, 0.0);
-            }
-        }
-    }
-
-    private void decreaseElementFromArmory(String elementType, int amount) {
-        double decreaseAmount = amount;
-        for (int i = 0; i < getCurrentGovernment().getArmouries().size(); i++) {
-            Armoury armoury = ((Armoury) getCurrentGovernment().getArmouries().get(i));
-            decreaseAmount = decreaseAmount - armoury.getElements(elementType);
-            if (decreaseAmount <= 0) {
-                armoury.setElements(elementType, armoury.getElements(elementType) - amount);
-                return;
-            } else {
-                armoury.setElements(elementType, 0.0);
-            }
-        }
-    }
+    //WRONG
+//    private void decreaseElementFromArmory(String elementType, int amount) {
+//        double decreaseAmount = amount;
+//        for (int i = 0; i < getCurrentGovernment().getArmouries().size(); i++) {
+//            Armoury armoury = ((Armoury) getCurrentGovernment().getArmouries().get(i));
+//            decreaseAmount = decreaseAmount - armoury.getElements(elementType);
+//            if (decreaseAmount <= 0) {
+//                armoury.setElements(elementType, armoury.getElements(elementType) - amount);
+//                return;
+//            } else {
+//                armoury.setElements(elementType, 0.0);
+//            }
+//        }
+//    }
 
 
     private boolean isEnemyNearHome(Home home) {
@@ -641,7 +634,7 @@ public class GameController {
         Home home = mapController.getHomeByPosition(x, y);
         ArrayList<Troop> selectedTroops = returnYourTroopsFromAll(home.getTroops());
 
-        if (selectedTroops.size() == 0)
+        if (selectedTroops.isEmpty())
             return "You do not have any troop here";
         getCurrentGame().setSelectedTroops(selectedTroops);
         getCurrentGame().setSelectedTroopsHome(home);
@@ -690,33 +683,33 @@ public class GameController {
     private void setTheTroopsHitpointAfterMoving(ArrayList<Troop> targetTroops, ArrayList<Home> race) {
         Integer mustReduced = 0;
         boolean isItPlain = false;
-        for (int i = 0; i < race.size(); i++) {
-            if (race.get(i).getTypeOfFloor().equals("Plain")) {
+        for (Home home : race) {
+            if (home.getTypeOfFloor().equals("Plain")) {
                 isItPlain = true;
                 break;
             }
-            if (race.get(i).getBuilding() == null)
+            if (home.getBuilding() == null)
                 continue;
-            if (race.get(i).getBuilding().getType().equals("CagedWarDogs")) {
+            if (home.getBuilding().getType().equals("CagedWarDogs")) {
                 mustReduced += 10;
-            } else if (race.get(i).getBuilding().getType().equals("PitchDitch") || race.get(i).getBuilding().getType().equals("KillingPit")) {
+            } else if (home.getBuilding().getType().equals("PitchDitch") || home.getBuilding().getType().equals("KillingPit")) {
                 mustReduced += 5;
             }
         }
         if (isItPlain) {
             removeKilTroopsFromHome(targetTroops, race.get(race.size() - 1));
         }
-        for (int i = 0; i < targetTroops.size(); i++) {
-            targetTroops.get(i).setHitpoint(targetTroops.get(i).getHitpoint() - mustReduced);
+        for (Troop targetTroop : targetTroops) {
+            targetTroop.setHitpoint(targetTroop.getHitpoint() - mustReduced);
         }
     }
 
 
     private int getTheMinimumSpeedOfTroops(ArrayList<Troop> troops) {
         int minimumSpeed = troops.get(0).getSpeed();
-        for (int i = 0; i < troops.size(); i++) {
-            if (minimumSpeed > troops.get(i).getSpeed())
-                minimumSpeed = troops.get(i).getSpeed();
+        for (Troop troop : troops) {
+            if (minimumSpeed > troop.getSpeed())
+                minimumSpeed = troop.getSpeed();
         }
         return minimumSpeed;
     }
@@ -786,10 +779,10 @@ public class GameController {
         String state = matcher.group("state");
         Home home = mapController.getHomeByPosition(x, y);
         ArrayList<Troop> yourTroops = returnYourTroopsFromAll(home.getTroops());
-        if (yourTroops.size() == 0)
+        if (yourTroops.isEmpty())
             return "You do not have any troops please change your wanted home or first make a troop hear";
-        for (int i = 0; i < yourTroops.size(); i++) {
-            yourTroops.get(i).setState(state);
+        for (Troop yourTroop : yourTroops) {
+            yourTroop.setState(state);
         }
         return "We change your troops state";
     }
@@ -814,15 +807,15 @@ public class GameController {
             return moveBeforeAttack;
         this.setTheTroopsHitpointAfterMoving(yourTroops, unitMotionController.findTheDestinationRace(getTheMinimumSpeedOfTroops(yourTroops), yourX, yourY, enemyX, enemyY));
         setAttackBetweenEnemyAndYours(yourTroops, enemyTroops);
-        if (enemyTroops.size() == 0)
+        if (enemyTroops.isEmpty())
             attackToBuilding(yourTroops, enemyHome);
         return "Attacked run successfully MyLord";
     }
 
     private void attackToBuilding(ArrayList<Troop> yourTroops, Home targetHome) {
         Integer power = 0;
-        for (int i = 0; i < yourTroops.size(); i++) {
-            power += yourTroops.get(i).getPower();
+        for (Troop yourTroop : yourTroops) {
+            power += yourTroop.getPower();
         }
         setTheWarBetweenEngineBuildingAndBuilding(power, targetHome);
     }
@@ -884,11 +877,11 @@ public class GameController {
         ArrayList<Troop> enemyTroops = returnEnemyTroopsFromAll(enemyHome.getTroops());
         int yourArcherNumber = 0;
         ArrayList<Troop> archerAndCrossbowMen = new ArrayList<>();
-        for (int i = 0; i < yourTroops.size(); i++) {
-            if (yourTroops.get(i).getType().equals("Archer") || yourTroops.get(i).getType().equals("CrossbowMen")) {
+        for (Troop yourTroop : yourTroops) {
+            if (yourTroop.getType().equals("Archer") || yourTroop.getType().equals("CrossbowMen")) {
                 yourArcherNumber++;
-                yourTroops.get(i).setInBord(true);
-                archerAndCrossbowMen.add(yourTroops.get(i));
+                yourTroop.setInBord(true);
+                archerAndCrossbowMen.add(yourTroop);
             }
         }
         if (yourArcherNumber == 0)
@@ -902,8 +895,8 @@ public class GameController {
     }
 
     private void resetArcherBorder(ArrayList<Troop> targetTroops) {
-        for (int i = 0; i < targetTroops.size(); i++) {
-            targetTroops.get(i).setInBord(false);
+        for (Troop targetTroop : targetTroops) {
+            targetTroop.setInBord(false);
         }
     }
 
@@ -918,18 +911,18 @@ public class GameController {
 
     private ArrayList<Troop> returnEnemyTroopsFromAll(ArrayList<Troop> allTroops) {
         ArrayList<Troop> enemy = new ArrayList<>();
-        for (int i = 0; i < allTroops.size(); i++) {
-            if (!allTroops.get(i).getOwner().equals(getCurrentGovernment()))
-                enemy.add(allTroops.get(i));
+        for (Troop allTroop : allTroops) {
+            if (!allTroop.getOwner().equals(getCurrentGovernment()))
+                enemy.add(allTroop);
         }
         return enemy;
     }
 
     private ArrayList<Troop> returnYourTroopsFromAll(ArrayList<Troop> allTroops) {
         ArrayList<Troop> yours = new ArrayList<>();
-        for (int i = 0; i < allTroops.size(); i++) {
-            if (allTroops.get(i).getOwner().equals(getCurrentGovernment()))
-                yours.add(allTroops.get(i));
+        for (Troop allTroop : allTroops) {
+            if (allTroop.getOwner().equals(getCurrentGovernment()))
+                yours.add(allTroop);
         }
         return yours;
     }
@@ -954,13 +947,11 @@ public class GameController {
     }
 
     private boolean isEnoughEngineer(int neededEngineer, ArrayList<Troop> yourTroops) {
-        for (int i = 0; i < yourTroops.size(); i++) {
-            if (yourTroops.get(i).getType().equals("Engineer"))
+        for (Troop yourTroop : yourTroops) {
+            if (yourTroop.getType().equals("Engineer"))
                 neededEngineer--;
         }
-        if (neededEngineer == 0)
-            return true;
-        return false;
+        return neededEngineer == 0;
     }
 
     private int getTheNeighborY(String string, int currentY) {
@@ -1019,8 +1010,8 @@ public class GameController {
 
     private int theNumberOfTroopOfThisType(String type, ArrayList<Troop> troops) {
         int counterTroop = 0;
-        for (int i = 0; i < troops.size(); i++) {
-            if (troops.get(i).getType().equals(type))
+        for (Troop troop : troops) {
+            if (troop.getType().equals(type))
                 counterTroop++;
         }
         return counterTroop;
@@ -1046,12 +1037,12 @@ public class GameController {
     }
 
     private void removeFromYourActiveSelectedEngineer(Home troopHome, ArrayList<Troop> selectedTroops, Integer decreasingNumber) {
-        for (int i = 0; i < selectedTroops.size(); i++) {
+        for (Troop selectedTroop : selectedTroops) {
             if (decreasingNumber <= 0)
                 return;
-            if (selectedTroops.get(i).getType().equals("Engineer")) {
+            if (selectedTroop.getType().equals("Engineer")) {
                 ArrayList<Troop> mustBeRemoved = new ArrayList<>();
-                mustBeRemoved.add(selectedTroops.get(i));
+                mustBeRemoved.add(selectedTroop);
                 removeTroopsFromHome(troopHome, mustBeRemoved);
                 decreasingNumber--;
             }
@@ -1110,8 +1101,8 @@ public class GameController {
 
     private Integer getEngineerNumberFromTroops(ArrayList<Troop> targetTroops) {
         Integer number = 0;
-        for (int i = 0; i < targetTroops.size(); i++) {
-            if (targetTroops.get(i).getType().equals("Engineer"))
+        for (Troop targetTroop : targetTroops) {
+            if (targetTroop.getType().equals("Engineer"))
                 number++;
         }
         return number;
@@ -1130,7 +1121,7 @@ public class GameController {
         ArrayList<Troop> selectedTroops = getCurrentGame().getSelectedTroops();
         if (selectedTroops == null)
             return "Please select troops first";
-        if (selectedTroops.size() == 0)
+        if (selectedTroops.isEmpty())
             return "You do not have any troops!";
 
         int populationIncrease = selectedTroops.size();
@@ -1294,7 +1285,7 @@ public class GameController {
         Integer homeX = Integer.parseInt(matcher.group("x"));
         Integer homeY = Integer.parseInt(matcher.group("y"));
         String troopName = matcher.group("type");
-        Integer troopCount = Integer.parseInt(matcher.group("count"));
+        int troopCount = Integer.parseInt(matcher.group("count"));
         Home home = mapController.getHomeByPosition(homeX, homeY);
         if (home == null)
             return "Out of board home";
@@ -1309,30 +1300,32 @@ public class GameController {
     }
 
     private boolean checkFloorType(String type) {
-        for (int i = 0; i < DataBase.getTypesOfFloor().size(); i++) {
-            if (DataBase.getTypesOfFloor().get(i).equals(type))
+        for (int i = 0; i < FloorType.values().length; i++) {
+            if (FloorType.values()[i].name().equals(type))
                 return true;
         }
         return false;
     }
 
-    public String openTrade(Socket socket) {
-        TradeController tradeController = new TradeController(getCurrentGovernment(), getCurrentGame());
-        tradeController.start(socket);
-        return "We exit from trade menu";
-    }
+    //TODO
+    // Fix it !
+//    public String openTrade(Socket socket) {
+//        TradeController tradeController = new TradeController(getCurrentGovernment(), getCurrentGame());
+//        tradeController.start(socket);
+//        return "We exit from trade menu";
+//    }
 
     public String openShop(Socket socket) {
-        ShopController shopController = new ShopController(getCurrentGovernment());
-        shopController.start(socket);
+//        ShopController shopController = new ShopController(getCurrentGovernment());
+//        shopController.start(socket);
         return "We exit from shop menu";
     }
 
     public String changeTurn(Socket socket) {
         ArrayList<Government> allGovernment = getCurrentGame().getGovernments();
-        for (int i = 0; i < allGovernment.size(); i++) {
-            allGovernment.get(i).getOwner().setHighScore(allGovernment.get(i).getOwner().getHighScore() + 12);
-            allGovernment.get(i).getOwner().setHighScore(allGovernment.get(i).getOwner().getHighScore() + (int) allGovernment.get(i).getCoin() / 120);
+        for (Government government : allGovernment) {
+            government.getOwner().setHighScore(government.getOwner().getHighScore() + 12);
+            government.getOwner().setHighScore(government.getOwner().getHighScore() + (int) government.getCoin() / 120);
         }
         if (getCurrentGovernment().equals(allGovernment.get(allGovernment.size() - 1)) && currentTurn == getCurrentGame().getTurnNumber()) {
             LoginController.winner(currentGame, socket);
@@ -1345,13 +1338,12 @@ public class GameController {
     }
 
     private void applyChanges() {
-        System.out.println("<<applyChange>>");
         updateOilEngineersBeforeTurn();
         updateAngryTroopBeforeTurn();
         Integer availableMineCounter = updateStockPilesAfterTurn();
         updateArmouryAfterTurn(availableMineCounter);
         updatePopularityAndPopulationAfterTurn();
-        updateGraneriesAfterTurn();
+        updateGranariesAfterTurn();
         updateTroopsAfterTurn();
         updateCoinAfterTurn();
         updateGameAfterTurn();
@@ -1371,13 +1363,13 @@ public class GameController {
     private void updateOilEngineersBeforeTurn() { //Pour oil if enemy near them
         ArrayList<Troop> yourAllTroops = getCurrentGovernment().getTroops();
         Home home;
-        for (int i = 0; i < yourAllTroops.size(); i++) {
-            if (yourAllTroops.get(i).getType().equals("Engineer") && yourAllTroops.get(i).getHome().getBuilding().equals("OilSmelter")) {
-                home = yourAllTroops.get(i).getHome();
-                if (yourAllTroops.get(i).equals("offensive")) {
+        for (Troop yourAllTroop : yourAllTroops) {
+            if (yourAllTroop.getType().equals("Engineer") && yourAllTroop.getHome().getBuilding().equals("OilSmelter")) {
+                home = yourAllTroop.getHome();
+                if (yourAllTroop.equals("offensive")) {
                     if (numberOfEnemyNearHome(home) >= 1)
                         home.setOilExist(true);
-                } else if (yourAllTroops.get(i).getState().equals("defensive")) {
+                } else if (yourAllTroop.getState().equals("defensive")) {
                     if (numberOfEnemyNearHome(home) >= 3)
                         home.setOilExist(true);
                 }
@@ -1390,12 +1382,12 @@ public class GameController {
         ArrayList<Troop> angryTroops = new ArrayList<>();
         ArrayList<Troop> allEnemyTroops = new ArrayList<>();
         ArrayList<Home> allHomes = getCurrentGame().getMap().getHomes();
-        for (int i = 0; i < yourTroops.size(); i++) {
-            if (yourTroops.get(i).getState().equals("offensive"))
-                angryTroops.add(yourTroops.get(i));
+        for (Troop yourTroop : yourTroops) {
+            if (yourTroop.getState().equals("offensive"))
+                angryTroops.add(yourTroop);
         }
-        for (int i = 0; i < allHomes.size(); i++) {
-            ArrayList<Troop> thisHomeEnemyTroops = returnEnemyTroopsFromAll(allHomes.get(i).getTroops());
+        for (Home allHome : allHomes) {
+            ArrayList<Troop> thisHomeEnemyTroops = returnEnemyTroopsFromAll(allHome.getTroops());
             allEnemyTroops.addAll(thisHomeEnemyTroops);
         }
         if (yourTroops.size() < allEnemyTroops.size()) {
@@ -1421,18 +1413,17 @@ public class GameController {
         mustBeAddedPopularity += fearRate;
 
         ArrayList<Home> allHomes = getCurrentGame().getMap().getHomes();
-        for (int i = 0; i < allHomes.size(); i++) {
-            if (allHomes.get(i).getOwner().equals(getCurrentGovernment()) && allHomes.get(i).getBuilding() != null && allHomes.get(i).getBuilding() instanceof TownBuilding) {
-                mustBeAddedPopularity += ((TownBuilding) allHomes.get(i).getBuilding()).getPopularityIncrease();
-                mustBeAddedPopulation += ((TownBuilding) allHomes.get(i).getBuilding()).getPopulationIncrease();
+        for (Home allHome : allHomes) {
+            if (allHome.getOwner().equals(getCurrentGovernment()) && allHome.getBuilding() != null && allHome.getBuilding() instanceof TownBuilding) {
+                mustBeAddedPopularity += ((TownBuilding) allHome.getBuilding()).getPopularityIncrease();
+                mustBeAddedPopulation += ((TownBuilding) allHome.getBuilding()).getPopulationIncrease();
             }
         }
         getCurrentGovernment().setPopularity(getCurrentGovernment().getPopularity() + mustBeAddedPopularity);
         getCurrentGovernment().setPopulation(getCurrentGovernment().getPopulation() + mustBeAddedPopulation);
     }
 
-    private void updateGraneriesAfterTurn() {   // The production of farms
-
+    private void updateGranariesAfterTurn() {   // The production of farms
         setFoodRateEffect();
         setTheFarmEffect();
     }
@@ -1447,62 +1438,62 @@ public class GameController {
 
         for (int i = 0; i < allFoodFarm.size(); i++) {
             if (allFoodFarm.get(i).getProductionNumber() > 0) {
-                addFoodToGranery(allFoodFarm.get(i).getProductionName(), allFoodFarm.get(i).getProductionNumber());
+                increaseElementOfStore("Granary", allFoodFarm.get(i).getProductionName(), allFoodFarm.get(i).getProductionNumber());
             }
         }
     }
 
-    private void addFoodToGranery(String FoodName, int amount) {
-
-        ArrayList<Granery> allGraneries = getCurrentGovernment().getGraneries();
-        for (int i = 0; i < allGraneries.size(); i++) {
-            if (amount <= 0)
-                return;
-            if (allGraneries.get(i).getCapacity() > 0) {
-                if (allGraneries.get(i).getCapacity() >= amount) {
-                    allGraneries.get(i).setCapacity(allGraneries.get(i).getCapacity() - amount);
-                    allGraneries.get(i).setElements(FoodName, allGraneries.get(i).getElements(FoodName) + ((double) amount));
-                    return;
-                } else {
-                    Double availableIncrease = allGraneries.get(i).getCapacity();
-                    allGraneries.get(i).setCapacity(0.0);
-                    allGraneries.get(i).setElements(FoodName, allGraneries.get(i).getElements(FoodName) + availableIncrease);
-                    amount -= availableIncrease;
-                }
-            }
-        }
-    }
+//    private void addFoodToGranary(String FoodName, int amount) {
+//
+//        ArrayList<Granary> allGraneries = getCurrentGovernment().getGraneries();
+//        for (int i = 0; i < allGraneries.size(); i++) {
+//            if (amount <= 0)
+//                return;
+//            if (allGraneries.get(i).getCapacity() > 0) {
+//                if (allGraneries.get(i).getCapacity() >= amount) {
+//                    allGraneries.get(i).setCapacity(allGraneries.get(i).getCapacity() - amount);
+//                    allGraneries.get(i).setElements(FoodName, allGraneries.get(i).getElements(FoodName) + ((double) amount));
+//                    return;
+//                } else {
+//                    Integer availableIncrease = allGraneries.get(i).getCapacity();
+//                    allGraneries.get(i).setCapacity(0);
+//                    allGraneries.get(i).setElements(FoodName, allGraneries.get(i).getElements(FoodName) + availableIncrease);
+//                    amount -= availableIncrease;
+//                }
+//            }
+//        }
+//    }
 
     private void setFoodRateEffect() {
-        Double eatenFood = getTheEatenFoodAmountPerOne(getCurrentGovernment().getFoodRate()) * getCurrentGovernment().getPopulation();
-        System.out.println("<<setFoodRate..>>" + eatenFood);
-        ArrayList<Granery> allGraneries = getCurrentGovernment().getGraneries();
-        HashMap<String, Double> allFoods;
-        for (int i = 0; i < allGraneries.size(); i++) {
+        Integer eatenFood = getTheEatenFoodAmountPerOne(getCurrentGovernment().getFoodRate()) * getCurrentGovernment().getPopulation();
+
+        ArrayList<Store> allStore = getCurrentGovernment().getAllStore();
+
+        for (int i = 0; i < allStore.size(); i++) {
             if (eatenFood <= 0)
                 break;
-//            allFoods = allGraneries.get(i).getAllFoods();
-            eatenFood = reduceRandomFoodFromAGranery(allGraneries.get(i), eatenFood);
+            else if (!allStore.get(i).getType().equals("Granary")) {
+                continue;
+            }
+            eatenFood = reduceRandomFoodFromAGranary(allStore.get(i), eatenFood);
         }
     }
 
-    private Double reduceRandomFoodFromAGranery(Granery granery, Double amountOfDecrease) {
-        Double existFoodAmount;
-        for (int i = 0; i < Granery.foodNames.size(); i++) {
+    private Integer reduceRandomFoodFromAGranary(Store Granary, Integer amountOfDecrease) {
+        int existFoodAmount;
+        for (int i = 0; i < Granary.getGoodList().size(); i++) {
             if (amountOfDecrease <= 0)
                 return amountOfDecrease;
-            existFoodAmount = granery.getElements(Granery.foodNames.get(i));
+            existFoodAmount = Granary.getGoodList().get(i).getCount();
             if (existFoodAmount > amountOfDecrease) {
-//                allFoods.put(Granery.foodNames.get(i), existFoodAmount - amountOfDecrease);
-                granery.setElements(Granery.foodNames.get(i), existFoodAmount - amountOfDecrease);
-                amountOfDecrease = -1.0;
+                Granary.getGoodList().get(i).setCount(existFoodAmount - amountOfDecrease);
+                amountOfDecrease = -1;
             } else {
-//                allFoods.put(Granery.foodNames.get(i), 0.0);
-                granery.setElements(Granery.foodNames.get(i), 0.0);
+                Granary.getGoodList().get(i).setCount(0);
                 amountOfDecrease -= existFoodAmount;
             }
         }
-        Double leftDecrease = amountOfDecrease;
+        Integer leftDecrease = amountOfDecrease;
         return leftDecrease;
     }
 
@@ -1515,35 +1506,34 @@ public class GameController {
     private void setTheMineEffects() {
         ArrayList<Home> allHomes = getCurrentGame().getMap().getHomes();
         ArrayList<Mine> allMines = new ArrayList<>();
-        for (int i = 0; i < allHomes.size(); i++) {
-            if (allHomes.get(i).getBuilding() != null && allHomes.get(i).getBuilding().getOwner().equals(getCurrentGovernment()) && allHomes.get(i).getBuilding() instanceof Mine)
-                allMines.add(((Mine) allHomes.get(i).getBuilding()));
+        for (Home allHome : allHomes) {
+            if (allHome.getBuilding() != null && allHome.getBuilding().getOwner().equals(getCurrentGovernment()) && allHome.getBuilding() instanceof Mine)
+                allMines.add(((Mine) allHome.getBuilding()));
         }
-        for (int i = 0; i < allMines.size(); i++) {
-            String mineName = allMines.get(i).getType();
+        for (Mine allMine : allMines) {
+            String mineName = allMine.getType();
             if (getTheMineProductionRate(mineName) > 0)
-                increaseElementOfStockPile(getTheMineProductionName(mineName), getTheMineProductionRate(mineName));
+                increaseElementOfStore(mineName, getTheMineProductionName(mineName), getTheMineProductionRate(mineName));
         }
     }
 
     private Integer setTheMineUsageEffects() {
         ArrayList<Home> allHomes = getCurrentGame().getMap().getHomes();
         ArrayList<Mine> allMines = new ArrayList<>();
-        for (int i = 0; i < allHomes.size(); i++) {
-            if (allHomes.get(i).getBuilding() != null && allHomes.get(i).getBuilding().getOwner().equals(getCurrentGovernment()) && (allHomes.get(i).getBuilding() instanceof Mine)) {
-                allMines.add(((Mine) allHomes.get(i).getBuilding()));
+        for (Home allHome : allHomes) {
+            if (allHome.getBuilding() != null && allHome.getBuilding().getOwner().equals(getCurrentGovernment()) && (allHome.getBuilding() instanceof Mine)) {
+                allMines.add(((Mine) allHome.getBuilding()));
             }
         }
-
-        Double allNeededStone = 0.0;
-        Double allNeededWood = 0.0;
-        Double allNeededIron = 0.0;
-        Double availableStone = getAllElementFromStockPile("stone");
-        Double availableWood = getAllElementFromStockPile("wood");
-        Double availableIron = getAllElementFromStockPile("iron");
+        int allNeededStone = 0;
+        int allNeededWood = 0;
+        int allNeededIron = 0;
+        int availableStone = getAllElementFromStore("StockPile", "Stone");
+        int availableWood = getAllElementFromStore("StockPile", "Wood");
+        int availableIron = getAllElementFromStore("StockPile", "iron");
         int counterOfActiveMine = 0;
-        for (int i = 0; i < allMines.size(); i++) {
-            String mineName = allMines.get(i).getType();
+        for (Mine allMine : allMines) {
+            String mineName = allMine.getType();
             if (allNeededStone > availableStone || allNeededIron > availableIron || allNeededWood > availableWood) {
                 if (getTheMineStoneUsed(mineName) != 0 || getTheMineWoodUsed(mineName) != 0 || getTheMineIronUsed(mineName) != 0)
                     continue;
@@ -1553,33 +1543,52 @@ public class GameController {
             allNeededIron += getTheMineIronUsed(mineName);
             counterOfActiveMine++;
         }
-        decreaseElementFromStockPlie("stone", allNeededStone);
-        decreaseElementFromStockPlie("wood", allNeededWood);
-        decreaseElementFromStockPlie("iron", allNeededIron);
+        decreaseElementFromStore("StockPile", "Stone", allNeededStone);
+        decreaseElementFromStore("StockPile", "Wood", allNeededWood);
+        decreaseElementFromStore("StockPile", "iron", allNeededIron);
         return counterOfActiveMine;
     }
 
-    private void increaseElementOfStockPile(String productName, int amount) {
-        ArrayList<StockPile> allStockpiles = getCurrentGovernment().getStockPiles();
-        for (int i = 0; i < allStockpiles.size(); i++) {
+    private void increaseElementOfStore(String storeType, String productName, int amount) {
+        ArrayList<Store> allStores = getCurrentGovernment().getAllStore();
+
+
+        for (Store tarStore : allStores) {
+
+
             if (amount < 0)
                 return;
-            if (amount > allStockpiles.get(i).getCapacity()) {
-                allStockpiles.get(i).setElements(productName, allStockpiles.get(i).getCapacity());
-                allStockpiles.get(i).setCapacity(0.0);
+            else if (!tarStore.getType().equals(storeType)) {
+                continue;
+            }
+            Good good = findGoodByName(tarStore, productName);
+            if (good == null)
+                continue;
+
+            if (amount > tarStore.getCapacity()) {
+                good.setCount(good.getCount() + tarStore.getCapacity());
+                tarStore.setCapacity(0);
             } else {
-                allStockpiles.get(i).setElements(productName, amount - 0.0);
-                allStockpiles.get(i).setCapacity(allStockpiles.get(i).getCapacity() - amount);
+                good.setCount(good.getCount() + amount);
+                tarStore.setCapacity(tarStore.getCapacity() - amount);
             }
         }
+    }
+
+    private Good findGoodByName(Store tar, String name) {
+        for (int i = 0; i < tar.getGoodList().size(); i++) {
+            if (tar.getGoodList().get(i).getGoodName().equals(name))
+                return tar.getGoodList().get(i);
+        }
+        return null;
     }
 
 
     private void updateArmouryAfterTurn(Integer availableCounter) {
         ArrayList<Mine> allMine = new ArrayList<>();
         ArrayList<Home> allHomes = getCurrentGame().getMap().getHomes();
-        for (int i = 0; i < allHomes.size(); i++) {
-            Building building = allHomes.get(i).getBuilding();
+        for (Home allHome : allHomes) {
+            Building building = allHome.getBuilding();
             if (!(building instanceof Mine))
                 return;
             if ((building.getType().equals("armourer") || building.getType().equals("Fletcher") || building.getType().equals("Poleturner") || building.getType().equals("blacksmith"))) {
@@ -1587,7 +1596,7 @@ public class GameController {
             }
         }
         for (int i = 0; i < allMine.size() && i < availableCounter; i++) {
-            increaseElementOfStockPile(allMine.get(i).getProductionName(), allMine.get(i).getProductionAmount());
+            increaseElementOfStore("Armoury", allMine.get(i).getProductionName(), allMine.get(i).getProductionAmount());
         }
     }
 
@@ -1595,14 +1604,14 @@ public class GameController {
     private void updateTroopsAfterTurn() {   // The war effects
         ArrayList<Home> allHomes = getCurrentGame().getMap().getHomes();
         reduceAllTroopsInBadFloor(allHomes);
-        for (int i = 0; i < allHomes.size(); i++) {
-            ArrayList<Troop> thisHomeAllTroops = allHomes.get(i).getTroops();
+        for (Home allHome : allHomes) {
+            ArrayList<Troop> thisHomeAllTroops = allHome.getTroops();
             ArrayList<Troop> thisHomeDeadTroops = new ArrayList<>();
-            for (int j = 0; j < thisHomeAllTroops.size(); j++) {
-                if (thisHomeAllTroops.get(j).getHitpoint() < 0)
-                    thisHomeDeadTroops.add(thisHomeAllTroops.get(j));
+            for (Troop thisHomeAllTroop : thisHomeAllTroops) {
+                if (thisHomeAllTroop.getHitpoint() < 0)
+                    thisHomeDeadTroops.add(thisHomeAllTroop);
             }
-            removeKilTroopsFromHome(thisHomeDeadTroops, allHomes.get(i));
+            removeKilTroopsFromHome(thisHomeDeadTroops, allHome);
         }
     }
 
@@ -1626,15 +1635,15 @@ public class GameController {
 
     private void updateBuildingsAfterTurn() {
         ArrayList<Home> allHomes = getCurrentGame().getMap().getHomes();
-        for (int i = 0; i < allHomes.size(); i++) {
-            if (allHomes.get(i).isTunnelCreated()) {
-                allHomes.get(i).setBuilding(null);
-                allHomes.get(i).setTunnelCreated(false);
+        for (Home allHome : allHomes) {
+            if (allHome.isTunnelCreated()) {
+                allHome.setBuilding(null);
+                allHome.setTunnelCreated(false);
             }
         }
-        for (int i = 0; i < allHomes.size(); i++) {
-            if (allHomes.get(i).getBuilding() != null && allHomes.get(i).getBuilding().getHitpoint() < 0) {
-                allHomes.get(i).setBuilding(null);
+        for (Home allHome : allHomes) {
+            if (allHome.getBuilding() != null && allHome.getBuilding().getHitpoint() < 0) {
+                allHome.setBuilding(null);
             }
         }
     }
@@ -1650,7 +1659,7 @@ public class GameController {
         getCurrentGame().setSelectedBuildingHome(null);
         getCurrentGame().setSelectedTroops(null);
         getCurrentGame().setSelectedTroopsHome(null);
-        Integer lastIndex = getCurrentGame().getGovernments().size() - 1;
+        int lastIndex = getCurrentGame().getGovernments().size() - 1;
         Government lastGovernment = getCurrentGame().getGovernments().get(lastIndex);
         if (getCurrentGovernment().equals(lastGovernment)) {
             getCurrentGame().increaseCurrentTurn();
@@ -1683,11 +1692,11 @@ public class GameController {
 
     private void updateEngineBuilding() {
         ArrayList<Home> allHomes = getCurrentGame().getMap().getHomes();
-        for (int i = 0; i < allHomes.size(); i++) {
-            EngineerBuilding currentEngineBuilding = allHomes.get(i).getEngineerBuilding();
+        for (Home allHome : allHomes) {
+            EngineerBuilding currentEngineBuilding = allHome.getEngineerBuilding();
             if (currentEngineBuilding != null && currentEngineBuilding.getOwner().equals(getCurrentGovernment())) {
-                if (allHomes.get(i).getBuilding() != null && (!allHomes.get(i).getBuilding().getOwner().equals(getCurrentGovernment()))) {
-                    setTheWarBetweenEngineBuildingAndBuilding(currentEngineBuilding.getDestroyingPower(), allHomes.get(i));
+                if (allHome.getBuilding() != null && (!allHome.getBuilding().getOwner().equals(getCurrentGovernment()))) {
+                    setTheWarBetweenEngineBuildingAndBuilding(currentEngineBuilding.getDestroyingPower(), allHome);
                 }
             }
         }
@@ -1705,8 +1714,8 @@ public class GameController {
         return foodRate * 4;
     }
 
-    private double getTheEatenFoodAmountPerOne(int foodRate) {
-        return ((double) 1 / 2 * foodRate + 1);
+    private int getTheEatenFoodAmountPerOne(int foodRate) {
+        return (foodRate / 2 + 1);
     }
 
 
@@ -1813,32 +1822,32 @@ public class GameController {
     }
 
     public static boolean isWarBuilding(String type) {
-        for (int i = 0; i < DataBase.getTypeOfWarBuilding().size(); i++) {
-            if (DataBase.getTypeOfWarBuilding().get(i).equals(type))
+        for (int i = 0; i < WarBuildings.values().length; i++) {
+            if (WarBuildings.values()[i].getName().equals(type))
                 return true;
         }
         return false;
     }
 
     public static boolean isMine(String type) {
-        for (int i = 0; i < DataBase.getTypeOfMines().size(); i++) {
-            if (DataBase.getTypeOfMines().get(i).equals(type))
+        for (int i = 0; i < Mines.values().length; i++) {
+            if (Mines.values()[i].getName().equals(type))
                 return true;
         }
         return false;
     }
 
     public static boolean isFoodFarm(String type) {
-        for (int i = 0; i < DataBase.getTypeOfFoodFarm().size(); i++) {
-            if (DataBase.getTypeOfFoodFarm().get(i).equals(type))
+        for (int i = 0; i < FoodFarms.values().length; i++) {
+            if (FoodFarms.values()[i].getFarmName().equals(type))
                 return true;
         }
         return false;
     }
 
     public static boolean isTownBuilding(String type) {
-        for (int i = 0; i < DataBase.getTypeOfTownBuilding().size(); i++) {
-            if (DataBase.getTypeOfTownBuilding().get(i).equals(type))
+        for (int i = 0; i < TownBuildings.values().length; i++) {
+            if (TownBuildings.values()[i].getName().equals(type))
                 return true;
         }
         return false;
@@ -1850,16 +1859,16 @@ public class GameController {
 
     public String showGovernmentInfo() {
         String out = "";
-        Double stone = getAllElementFromStockPile("stone");
-        Double wood = getAllElementFromStockPile("wood");
-        Double Iron = getAllElementFromStockPile("iron");
-        Double Bow = getAllElementArmoury("Bow");
-        Double Apple = getAllElementGranery("Apple");
+        int Stone = getAllElementFromStore("StockPile", "Stone");
+        int Wood = getAllElementFromStore("StockPile", "Wood");
+        int Iron = getAllElementFromStore("StockPile", "Iron");
+        int Bow = getAllElementFromStore("Armoury", "Bow");
+        int Apple = getAllElementFromStore("Granary", "Apple");
         Government targetGovernment = getCurrentGovernment();
         out += "Name : " + targetGovernment.getOwner().getNickname();
         out += " Gold : " + targetGovernment.getCoin();
         out += "Population : " + getCurrentGovernment().getPopulation() + " - Popularity " + getCurrentGovernment().getPopularity();
-        out += " Stone : " + stone + " - Iron : " + Iron + " - Wood : " + wood + " - Bow : " + Bow + " - Apple : " + Apple;
+        out += " Stone : " + Stone + " - Iron : " + Iron + " - Wood : " + Wood + " - Bow : " + Bow + " - Apple : " + Apple;
         return out;
     }
 }
