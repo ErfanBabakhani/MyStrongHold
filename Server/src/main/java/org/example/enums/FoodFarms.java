@@ -4,7 +4,6 @@ public enum FoodFarms {
     Mill("Mill", 10, "flour"),
     Baker("Baker", 5, "Bread"),
     Brewery("Brewery", 3, ""),
-//    Granary("Granary", 0, ""),
     AppleGarden("AppleGarden", 15, "Apple"),
     DairyProducts("DairyProducts", 10, "Cheese"),
     BarleyField("BarleyField", 0, ""),
@@ -12,9 +11,9 @@ public enum FoodFarms {
     WheatField("WheatField", 8, "wheat"),
     ;
 
-    private String farmName;
-    private String productionName;
-    private Integer productionRate;
+    private final String farmName;
+    private final String productionName;
+    private final Integer productionRate;
 
     FoodFarms(String farmName, Integer productionRate, String productionName) {
         this.farmName = farmName;

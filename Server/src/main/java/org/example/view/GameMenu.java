@@ -64,6 +64,8 @@ public class GameMenu extends Menu {
                     DataBase.writeAMessageToClient(end, socket);
             } else if ((matcher = isMatched(command, "^show food list$")) != null)
                 DataBase.writeAMessageToClient(gameController.showFoodList(), socket);
+            else if ((matcher = isMatched(command, "^show list$")) != null)
+                DataBase.writeAMessageToClient(gameController.showAllList(), socket);
             else if ((matcher = isMatched(command, "^show food rate$")) != null)
                 DataBase.writeAMessageToClient(gameController.showFoodRate(), socket);
             else if ((matcher = isMatched(command, "^food rate((?: -r (?<r>\\S+))){1}$")) != null) {

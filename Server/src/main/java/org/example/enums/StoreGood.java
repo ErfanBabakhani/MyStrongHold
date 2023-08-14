@@ -39,7 +39,7 @@ public enum StoreGood {
         this.goodList = new ArrayList<>();
     }
 
-    private ArrayList<Good> goodList;
+    private final ArrayList<Good> goodList;
 
     public ArrayList<Good> getGoodList() {
         return goodList;

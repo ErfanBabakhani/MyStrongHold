@@ -1,8 +1,8 @@
 package org.example.model.GameInfo;
 
 public class TownBuilding extends Building {
-    private Integer populationIncrease;
-    private Integer popularityIncrease;
+    private final Integer populationIncrease;
+    private final Integer popularityIncrease;
 
     public TownBuilding(Government owner, String type, Integer maxHitpoint, Integer needWorkers, Integer price, Integer neededStone, Integer neededWood, Integer populationIncrease, Integer popularityIncrease) {
         super(owner, type, maxHitpoint, needWorkers, price, neededStone, neededWood);

@@ -6,9 +6,9 @@ public enum TownBuildings {
     Church("Church", 0, 2),
     Cathedral("Cathedral", 0, 2),
     ;
-    private String name;
-    private Integer populationIncrease;
-    private Integer popularityIncrease;
+    private final String name;
+    private final Integer populationIncrease;
+    private final Integer popularityIncrease;
 
     TownBuildings(String name, Integer populationIncrease, Integer popularityIncrease) {
         this.name = name;

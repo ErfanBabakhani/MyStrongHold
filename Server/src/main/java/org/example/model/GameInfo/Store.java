@@ -15,16 +15,16 @@ public class Store extends Building {
 
     public Store(Government owner, String type, Integer maxHitpoint, Integer needWorkers, Integer price, Integer neededStone, Integer neededWood) {
         super(owner, type, maxHitpoint, needWorkers, price, neededStone, neededWood);
-        if (type.equals("Granary")) {
+        if (type.equals(StoreGood.Granary.name())) {
             this.maxCap = 100;
             goodList.addAll(StoreGood.Granary.getGoodList());
-        } else if (type.equals("StockPile")) {
+        } else if (type.equals(StoreGood.StockPile.name())) {
             this.maxCap = 200;
             goodList.addAll(StoreGood.StockPile.getGoodList());
-        } else if (type.equals("Armoury")) {
+        } else if (type.equals(StoreGood.Armoury.name())) {
             this.maxCap = 50;
             goodList.addAll(StoreGood.Armoury.getGoodList());
-        } else if (type.equals("Stable")) {
+        } else if (type.equals(StoreGood.Stable.name())) {
             this.maxCap = 5;
             goodList.addAll(StoreGood.Stable.getGoodList());
         } else {
@@ -50,19 +50,4 @@ public class Store extends Building {
         return goodList;
     }
 
-    public static void main(String[] args) {
-        Store store = new Store(null, "Granary", 0, 0, 0, 0, 0);
-        System.out.println(store.goodList.get(0).getGoodName());
-        System.out.println(store.goodList.get(0).getPrice());
-        System.out.println(store.capacity);
-//        for (int i = 0; i < FloorType.values().length; i++) {
-//            System.out.println(FloorType.values()[i]);
-//        }
-        for (int i = 0; i < TroopTypes.values().length; i++) {
-            System.out.println(TroopTypes.values()[i].type + TroopTypes.values()[i].weapons);
-        }
-        for (int i = 0; i < FloorType.values().length; i++) {
-            System.out.println(FloorType.values()[i].name());
-        }
-    }
 }

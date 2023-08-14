@@ -11,7 +11,6 @@ public enum WarBuildings {
     DefensiveTower("DefensiveTower", 7, 7, 0),
     SquareTower("SquareTower", 10, 10, 0),
     CircleTower("CircleTower", 0, 0, 0),
-    //    Armoury("Armoury", 0, 0, 0),
     Barrack("Barrack", 0, 0, 0),
     MercenaryPost("MercenaryPost", 0, 0, 0),
     EngineerGuild("EngineerGuild", 0, 0, 0),
@@ -21,10 +20,10 @@ public enum WarBuildings {
     CagedWarDogs("CagedWarDogs", 0, 0, 0),
     SiegeTent("SiegeTent", 0, 0, 0),
     ;
-    private String name;
-    private Integer fireRange;
-    private Integer defendRange;
-    private Integer powerOfDestroying;
+    private final String name;
+    private final Integer fireRange;
+    private final Integer defendRange;
+    private final Integer powerOfDestroying;
 
     WarBuildings(String name, Integer fireRange, Integer defendRange, Integer powerOfDestroying) {
         this.name = name;

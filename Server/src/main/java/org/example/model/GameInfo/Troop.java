@@ -1,8 +1,14 @@
 package org.example.model.GameInfo;
 
 public class Troop extends People {
-    private String state = "standing";
-    private Integer power;
+    public enum TroopState {
+        Standing,
+        Offensive,
+        Defensive;
+    }
+
+    private String state = TroopState.Standing.name();
+    private final Integer power;
     private Integer hitpoint;
     private Integer speed;
     private String troopGroup;
