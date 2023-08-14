@@ -103,7 +103,7 @@ public class GameController {
             out.append(tarGood.getGoodName()).append(" --> ");
             count = 0;
             for (Store tar : allStore) {
-                if (!tar.equals(tarStoreGood.name()))
+                if (!tar.getType().equals(tarStoreGood.name()))
                     continue;
                 count += getAllElementFromStore(tar.getType(), tarGood.getGoodName());
             }
@@ -196,12 +196,9 @@ public class GameController {
         if (!isEnoughWorkers(neededWorkers)) {
             return "Not enough workers to run this building so first increase your unemployed !";
         }
-
-        //TODO
-//        if (getAllElementFromStore(StoreGood.StockPile.name(), "Stone") < neededStone || getAllElementFromStore(StoreGood.StockPile.name(), "Wood") < neededWood) {
-//            return "Sorry more Stone or Wood needed !";
-//        } else
-        if (isWarBuilding(buildingName)) {
+        if (getAllElementFromStore(StoreGood.StockPile.name(), "Stone") < neededStone || getAllElementFromStore(StoreGood.StockPile.name(), "Wood") < neededWood) {
+            return "Sorry more Stone or Wood needed !";
+        } else if (isWarBuilding(buildingName)) {
             Integer fireRange = getTheWarBuildingFireRange(buildingName);
             Integer defendRange = getTheWarBuildingDefendRange(buildingName);
             Integer powerOfDestroying = getTheWarBuildingPowerOfDestroying(buildingName);
@@ -253,7 +250,7 @@ public class GameController {
         return "We build a " + buildingName + " for you MyLord";
     }
 
-    private void decreaseElementFromStore(String storeType, String element, Integer amount) {
+    public void decreaseElementFromStore(String storeType, String element, Integer amount) {
         ArrayList<Store> allStore = getCurrentGovernment().getAllStore();
         for (Store tarStore : allStore) {
             if (!tarStore.getType().equals(storeType))
@@ -275,7 +272,7 @@ public class GameController {
         }
     }
 
-    private int getAllElementFromStore(String storeType, String element) {
+    public int getAllElementFromStore(String storeType, String element) {
         ArrayList<Store> allStores = getCurrentGovernment().getAllStore();
         int allElementCount = 0;
         for (Store tarStore : allStores) {
@@ -1310,8 +1307,8 @@ public class GameController {
 //    }
 
     public String openShop(Socket socket) {
-//        ShopController shopController = new ShopController(getCurrentGovernment());
-//        shopController.start(socket);
+        ShopController shopController = new ShopController(this);
+        shopController.start(socket);
         return "We exit from shop menu";
     }
 
@@ -1523,7 +1520,7 @@ public class GameController {
         return counterOfActiveMine;
     }
 
-    private void increaseElementOfStore(String storeType, String productName, int amount) {
+    public void increaseElementOfStore(String storeType, String productName, int amount) {
         ArrayList<Store> allStores = getCurrentGovernment().getAllStore();
 
 
@@ -1547,6 +1544,17 @@ public class GameController {
                 tarStore.setCapacity(tarStore.getCapacity() - amount);
             }
         }
+    }
+
+    public int getTheAllSpace(String storeType) {
+        ArrayList<Store> allStore = getCurrentGovernment().getAllStore();
+        int space = 0;
+        for (Store tarStore : allStore) {
+            if (!tarStore.getType().equals(storeType))
+                continue;
+            space += tarStore.getCapacity();
+        }
+        return space;
     }
 
     private Good findGoodByName(Store tar, String name) {

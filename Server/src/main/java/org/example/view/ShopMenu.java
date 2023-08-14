@@ -23,7 +23,7 @@ public class ShopMenu extends Menu {
             if (command.equals(""))
                 continue;
             if ((matcher = isMatched(command, "^show price list$")) != null)
-                System.out.print(shopController.showPriceList());
+                DataBase.writeAMessageToClient(shopController.showPriceList(), socket);
             else if ((matcher = isMatched(command, "^buy(((?: -a (?<amount>\\S+))|(?: -i (?<name>(?:\"[^\"]+\")|(?:(?!\")\\S+(?<!\"))))){0,1}){0,2}$")) != null) {
                 if (matcher.group("amount") == null)
                     printMassage("amount is null", socket);
