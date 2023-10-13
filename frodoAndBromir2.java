@@ -20,7 +20,6 @@ public class frodoAndBromir2 {
             arr[0][i] = -2;
             arr[2 * n][i] = -2;
         }
-        // System.out.println(":" + n + ";");
 
         for (int i = 1; i <= n; i++) { // scaning fors
             arr[i] = new int[i + n + 1];
@@ -42,7 +41,6 @@ public class frodoAndBromir2 {
             }
         }
 
-        // System.out.println("??????");
 
         for (int i = n + 1; i <= (2 * n) - 1; i++) { // scaning fors
             // System.out.println(i);
@@ -67,53 +65,35 @@ public class frodoAndBromir2 {
 
         int[] fixed2 = Arrays.copyOf(fixed, fi); // the end index has 0 value
         Arrays.sort(fixed2);
-        // scanner.nextLine();
-        // fixed2[fixed2.length-1]=0;
-        // for (int i : fixed2) {
-        //     System.out.println(i);
-        // }
+     
         solveIt(arr, fixed2, n, fixedX, fixedY, max, 1);
-        // System.out.println("final\n\n");
 
     }
 
-    // // // // // // // // // // // // // // //
 
     static int solveIt(int[][] arr, int[] fixed, int n, int x, int y, int max, int fi) {
 
-        // System.out.println();
 
-        // System.out.println(x + " " + y + "arr is = " + arr[y][x]);
-        // printArr(arr);
-        // System.out.println("////////");
+ 
 
         if (fixed[fi-1] == max) {
-            // System.out.println("!! YOU ARE WIN !!");
             printArr(arr);
             System.exit(0);
         }
 
         if (arr[y][x] == fixed[fi] - 1 && neighberXOfaNUM(arr, n, x, y, fixed[fi]) == 1) {
-            // System.out.println("FINISH");
-            // printArr(arr);
+  
             int[] px = new int[1];
             int[] py = new int[1];
             finedSheshzelie(arr, fixed[fi], px, py);
             fi++;
             solveIt(arr, fixed, n, px[0], py[0], max, fi);
-            // System.exit(0);
             return 0;
         }
 
         int neighbersi[] = new int[6];
         int neighbersj[] = new int[6];
         makeOurNeighber(arr, y, x, n, neighbersi, neighbersj);
-
-        // System.out.printf(
-        //         "\n..........\nNeighbers are %d  %d :  %d  %d :  %d  %d : %d  %d :  %d  %d :  %d  %d  \n..........\n",
-        //         neighbersi[0], neighbersj[0], neighbersi[1], neighbersj[1], neighbersi[2], neighbersj[2],
-        //         neighbersi[3], neighbersj[3], neighbersi[4], neighbersj[4],
-        //         neighbersi[5], neighbersj[5]);
 
         for (int i = 0; i < neighbersj.length; i++) {
             if (neighbersi[i] == 0)
